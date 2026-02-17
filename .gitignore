@@ -2,3 +2,5 @@
 .flatpak
 .flatpak-builder
 flatpak
+src/__pycache__/pages.cpython-314.pyc
+src/__pycache__/window.cpython-314.pyc

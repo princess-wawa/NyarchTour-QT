@@ -1,41 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <requires lib="gtk" version="4.0"/>
-  <requires lib="Adw" version="1.0"/>
-  <object class="GtkBox" id="page">
-    <property name="hexpand">true</property>
-    <property name="vexpand">true</property>
-    <property name="spacing">20</property>
-    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-    <child>
-      <object class="GtkPicture" id="image">
-      </object>
-    </child>
-    <child>
-      <object class="GtkLabel" id="title">
-        <property name="valign">GTK_ALIGN_CENTER</property>
-        <property name="css-classes">title-1</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkLabel" id="body">
-        <property name="valign">GTK_ALIGN_START</property>
-        <property name="margin-start">130</property>
-        <property name="margin-end">130</property>
-        <property name="wrap">true</property>
-        <property name="max-width-chars">40</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="buttonsBox">
-        <property name="hexpand">true</property>
-        <property name="baseline-position">GTK_BASELINE_POSITION_CENTER</property>
-        <property name="valign">GTK_ALIGN_CENTER</property>
-        <property name="halign">GTK_ALIGN_CENTER</property>
-        <property name="spacing">10</property>
-        <property name="margin-bottom">20</property>
+<ui version="4.0">
+ <class>CarouselPage</class>
+ <widget class="QWidget" name="CarouselPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>400</height>
+   </size>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="imageLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="font">
+      <font>
+        <pointsize>24</pointsize>
+        <bold>true</bold>
+      </font>
+    </property>
+     <property name="text">
+      <string>Title</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="descriptionLabel">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     
+     <!-- here go buttons -->
+     
+     <!-- button example :
+     <item>
+      <widget class="QToolButton" name="toolButton_2">
+       <property name="text">
+        <string>button</string>
+       </property>
+      </widget>
+     </item>
+     -->
 
-      </object>
-    </child>
-  </object>
-</interface>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,76 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <requires lib="gtk" version="4.0"/>
-  <requires lib="Adw" version="1.0"/>
-  <template class="NyarchtourWindow" parent="AdwApplicationWindow">
-    <property name="default-width">800</property>
-    <property name="default-height">650</property>
-    <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <child>
-            <object class="GtkHeaderBar" id="header_bar">
-              <property name="css-classes">flat</property>
-                <child type="title">
-                <object class="AdwCarouselIndicatorDots">
-                  <property name="carousel">carousel</property>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkBox">
-             <child>
-               <object class="GtkButton" id="previous">
-                 <property name="opacity">0</property>
-                  <property name="icon-name">left-large-symbolic</property>
-                  <property name="valign">GTK_ALIGN_CENTER</property>
-                  <property name="margin-start">12</property>
-                  <style>
-                    <class name="circular"></class>
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="AdwCarousel" id="carousel">
-                  <property name="vexpand">True</property>
-                  <property name="hexpand">True</property>
-                  <property name="allow-long-swipes">true</property>
-                  <property name="allow-scroll-wheel">true</property>
-                  <property name="interactive">true</property>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="next">
-                  <property name="icon-name">right-large-symbolic</property>
-                  <property name="valign">GTK_ALIGN_CENTER</property>
-                  <property name="margin-end">12</property>
-                  <style>
-                    <class name="suggested-action"></class>
-                    <class name="circular"></class>
-                  </style>
-                </object>
-              </child>
-            </object>
-          </child>
-          </object>
-    </child>
-  </template>
-  <menu id="primary_menu">
-    <section>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Nyarch Tour</string>
+  </property>
+
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+
+
+    <!-- Dot Indicators -->
+    <item>
+     <layout class="QHBoxLayout" name="dotLayout">
+      <property name="alignment">
+       <set>Qt::AlignHCenter</set>
+      </property>
+
+        <!-- here will be the list of dots -->
+
+        <!-- dot example:
+        
+        <item>
+            <widget class="QPushButton" name="dot2">
+                <property name="checkable">
+                    <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                    <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                    <size>
+                        <width>12</width>
+                        <height>12</height>
+                    </size>
+                </property>
+                <property name="maximumSize">
+                    <size>
+                        <width>12</width>
+                        <height>12</height>
+                    </size>
+                </property>
+                <property name="styleSheet">
+                    <string>
+            QPushButton {
+            border-radius: 6px;
+            background-color: gray;
+            border: none;
+            }
+            QPushButton:checked {
+            background-color: black;
+            }
+                    </string>
+                </property>
+            </widget>
+        </item>
+      -->
+
+     </layout>
+    </item>
+
+    <!-- Navigation Row -->
+    <item>
+     <layout class="QHBoxLayout" name="navigationLayout">
+
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
+       <widget class="QPushButton" name="leftButton">
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+        <property name="minimumWidth">
+         <number>40</number>
+        </property>
+        <property name="maximumWidth">
+         <number>40</number>
+        </property>
+       </widget>
       </item>
+
       <item>
-        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-        <attribute name="action">win.show-help-overlay</attribute>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <layout class="QHBoxLayout" name="galleryLayout">
+            <!-- here will be loaded the pages-->
+
+         </layout>
+        </widget>
+       </widget>
       </item>
+
       <item>
-        <attribute name="label" translatable="yes">_About NyarchTour</attribute>
-        <attribute name="action">app.about</attribute>
+       <widget class="QPushButton" name="rightButton">
+        <property name="text">
+         <string>&gt;</string>
+        </property>
+        <property name="minimumWidth">
+         <number>40</number>
+        </property>
+        <property name="maximumWidth">
+         <number>40</number>
+        </property>
+       </widget>
       </item>
-    </section>
-  </menu>
-</interface
->
+
+     </layout>
+    </item>
+
+   </layout>
+  </widget>
+
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+
