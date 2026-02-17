@@ -43,8 +43,8 @@ class NyarchtourWindow(QMainWindow):
         self.connect_signals()
         self.add_all_pages()
         
-        self._resize_pages
         QTimer.singleShot(0, self._resize_pages)
+        
 
     def connect_signals(self):
         self.leftButton.clicked.connect(self.go_previous)
@@ -116,7 +116,7 @@ class NyarchtourWindow(QMainWindow):
         self.scroll_to_current()
         self.dots[self.current_index].setChecked(True)        
     
-    def scroll_to_current(self):
+    def scroll_to_current(self, animation=True):
         if not self.pages:
             return
 
@@ -125,7 +125,11 @@ class NyarchtourWindow(QMainWindow):
 
         scroll_bar = self.scrollArea.horizontalScrollBar()
         self.animation = QPropertyAnimation(scroll_bar, b"value")
-        self.animation.setDuration(300)
+        if animation:
+            self.animation.setDuration(300)
+        else: 
+            self.animation.setDuration(0)
+           
         self.animation.setStartValue(scroll_bar.value())
         self.animation.setEndValue(target)
         self.animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
@@ -133,7 +137,8 @@ class NyarchtourWindow(QMainWindow):
         
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self._resize_pages()
+        self._resize_pages() 
+        self.scroll_to_current(animation=False)
 
     def _resize_pages(self):
         viewport_width = self.scrollArea.viewport().width()
