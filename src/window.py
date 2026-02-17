@@ -19,7 +19,7 @@
 
 from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton, QWidget, QToolButton, QSizePolicy
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PyQt6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QTimer
 from PyQt6 import uic
 import os
 import subprocess
@@ -42,6 +42,9 @@ class NyarchtourWindow(QMainWindow):
         # connect the buttons
         self.connect_signals()
         self.add_all_pages()
+        
+        self._resize_pages
+        QTimer.singleShot(0, self._resize_pages)
 
     def connect_signals(self):
         self.leftButton.clicked.connect(self.go_previous)
@@ -60,6 +63,7 @@ class NyarchtourWindow(QMainWindow):
             for btn in buttons:
                 page.add_button(btn["label"], btn["command"])
 
+
         self.galleryLayout.addWidget(page)
         self.pages.append(page)
         self.add_dot()
@@ -68,7 +72,9 @@ class NyarchtourWindow(QMainWindow):
 
     def add_all_pages(self):
         for e in PAGES:
-            self.add_page(e["title"], e["body"], f"pictures/{e["icon"]}.png", e["buttons"])
+            page = self.add_page(e["title"], e["body"], f"pictures/{e["icon"]}.png", e["buttons"])
+            page.update_image()
+            self._resize_pages()
             
     def add_dot(self):
         dot = QPushButton()
@@ -143,9 +149,9 @@ class CarouselPage(QWidget):
 
     def set_image(self, path: str):
         self._pixmap = QPixmap(path)  # save original, don't scale yet
-        self._update_image()
+        self.update_image()
 
-    def _update_image(self):
+    def update_image(self):
         if self._pixmap is None:
             return
         scaled = self._pixmap.scaled(
@@ -157,7 +163,7 @@ class CarouselPage(QWidget):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self._update_image()
+        self.update_image()
 
     def set_title(self, text: str):
         self.titleLabel.setText(text)
@@ -172,166 +178,3 @@ class CarouselPage(QWidget):
                 
         self.horizontalLayout.addWidget(btn)
         
-        
-'''
-class NyarchtourApplication(Adw.Application):
-    """The main application singleton class."""
-
-    def __init__(self):
-        super().__init__(application_id='moe.nyarchlinux.tour',
-                         flags=Gio.ApplicationFlags.FLAGS_NONE)
-        self.create_action('quit', self.quit, ['<primary>q'])
-        self.create_action('about', self.on_about_action)
-        self.create_action('preferences', self.on_preferences_action)
-
-    def do_activate(self):
-        """Called when the application is activated.
-
-        We raise the application's main window, creating it if
-        necessary.
-        """
-        win = self.props.active_window
-        if not win:
-            win = NyarchtourWindow(application=self)
-        win.present()
-
-    def on_about_action(self, widget, _):
-        """Callback for the app.about action."""
-        about = Adw.AboutWindow(transient_for=self.props.active_window,
-                                application_name='nyarchtour',
-                                application_icon='moe.nyarchlinux.tour',
-                                developer_name='Francesco Caracciolo',
-                                version='0.4.5',
-                                developers=['Francesco Caracciolo'],
-                                copyright='© 2025 Francesco Caracciolo')
-        about.present()
-
-    def on_preferences_action(self, widget, _):
-        """Callback for the app.preferences action."""
-        print('app.preferences action activated')
-
-    def create_action(self, name, callback, shortcuts=None):
-        """Add an application action.
-
-        Args:
-            name: the name of the action
-            callback: the function to be called when the action is
-              activated
-            shortcuts: an optional list of accelerators
-        """
-        action = Gio.SimpleAction.new(name, None)
-        action.connect("activate", callback)
-        self.add_action(action)
-        if shortcuts:
-            self.set_accels_for_action(f"app.{name}", shortcuts)
-
-
-def main(version):
-    """The application's entry point."""
-    app = NyarchtourApplication()
-    return app.run(sys.argv)
-
-from gi.repository import Adw
-from gi.repository import Gtk
-from .pages import PAGES
-import subprocess
-@Gtk.Template(resource_path='/moe/nyarchlinux/tour/window.ui')
-class NyarchtourWindow(Adw.ApplicationWindow):
-    __gtype_name__ = 'NyarchtourWindow'
-
-    carousel = Gtk.Template.Child("carousel")
-    previous = Gtk.Template.Child("previous")
-    nextbutton = Gtk.Template.Child("next")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.commands = {}
-        self.current_page = 0
-        for page in PAGES:
-            if "condition" in page and not page["condition"]():
-                continue
-            p = self.generate_page(page)
-            self.carousel.append(p)
-        self.carousel.connect("page-changed", self.page_changes)
-        self.nextbutton.connect("clicked", self.next_page)
-        self.previous.connect("clicked", self.previous_page)
-        self.connect("close-request", self.on_close_request)
-
-    def on_close_request(self, window):
-        if (self.current_page > 7):
-            return False
-        dialog = Adw.MessageDialog(
-            transient_for=self,
-            title="Confirm Exit",
-            body="Nyarch Tour will guide you through all the Nyarch Linux features.\nAre you sure?",
-            default_response="cancel",
-            close_response="cancel",
-        )
-        dialog.add_response("cancel", "Cancel")
-        dialog.add_response("exit", "Exit")
-        dialog.set_response_appearance("exit", Adw.ResponseAppearance.DESTRUCTIVE)
-        def on_response(dialog, response):
-            if response == "exit":
-                window.destroy()  # Close the window if "Exit" is clicked
-            dialog.destroy()  # Close the dialog
-
-        dialog.connect("response", on_response)
-        dialog.present()
-        return True
-    def page_changes(self, carousel, page):
-        self.current_page = page
-        if page > 0:
-            self.previous.set_opacity(1)
-        else:
-            self.previous.set_opacity(0)
-        if page >= self.carousel.get_n_pages()-1:
-            self.nextbutton.set_opacity(0)
-        else:
-           self.nextbutton.set_opacity(1)
-    def next_page(self, button):
-        self.carousel.get_position()
-        if self.carousel.get_position() < self.carousel.get_n_pages()-1:
-            self.carousel.scroll_to(self.carousel.get_nth_page(self.carousel.get_position()+1), True)
-
-    def previous_page(self, button):
-        self.carousel.get_position()
-        if self.carousel.get_position() > 0:
-            self.carousel.scroll_to(self.carousel.get_nth_page(self.carousel.get_position()-1), True)
-
-    def generate_page(self, page):
-        builder = Gtk.Builder.new_from_resource("/moe/nyarchlinux/tour/carousel_page.ui")
-        p = builder.get_object("page")
-        titlelabel = builder.get_object("title")
-        bodylabel = builder.get_object("body")
-        gtkimage = builder.get_object("image")
-        buttonsBox = builder.get_object("buttonsBox")
-        for button in page['buttons']:
-        	Gtkbutton = Gtk.Button()
-        	button_content = Adw.ButtonContent()
-        	# Set properties
-        	if button["style"] is not None:
-        		Gtkbutton.set_css_classes([button["style"]])
-        	if button["icon"] is not None:
-        		button_content.set_icon_name(button["icon"])
-        		button_content.set_use_underline(True)
-        		button_content.set_label(button["label"])
-        		Gtkbutton.set_child(button_content)
-        	else:
-        		Gtkbutton.set_label(button["label"])
-        	self.commands[Gtkbutton] = button["command"]
-        	Gtkbutton.connect("clicked", self.button_clicked)
-        	buttonsBox.append(Gtkbutton)
-
-        titlelabel.set_label(page["title"])
-        bodylabel.set_label(page["body"])
-        gtkimage.set_resource("/moe/nyarchlinux/tour/pictures/" + page["icon"] + ".png")
-        #gtkimage.set_pixel_size(page["icon-size"])
-        return p
-
-    def button_clicked(self, button):
-        	self.background_process(self.commands[button])
-
-    def background_process(self, command):
-    	subprocess.Popen(["flatpak-spawn",  "--host"] + command.split())
-    
-'''
