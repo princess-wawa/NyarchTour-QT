@@ -45,6 +45,12 @@ class NyarchtourWindow(QMainWindow):
         
         QTimer.singleShot(0, self._resize_pages)
         
+        # if we ever have lag, we won't be able to update in time, so we need to update just after the lag spikes if the windows are ever resized during the lag
+        self._resize_timer = QTimer(self)
+        self._resize_timer.setSingleShot(True)
+        self._resize_timer.setInterval(100)  # set the timer
+        self._resize_timer.timeout.connect(self._resize_pages)
+            
 
     def connect_signals(self):
         self.leftButton.clicked.connect(self.go_previous)
@@ -139,6 +145,7 @@ class NyarchtourWindow(QMainWindow):
         super().resizeEvent(event)
         self._resize_pages() 
         self.scroll_to_current(animation=False)
+        self._resize_timer.start()
 
     def _resize_pages(self):
         viewport_width = self.scrollArea.viewport().width()
